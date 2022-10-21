@@ -1,0 +1,111 @@
+*************  NOMBRE  ***************
+fmod VOCAL is
+
+*************  CONJUNTOS  ************
+	protecting BOOL .
+	sort V .
+
+*************  SINTAXIS  *************
+	ops A E I O U : -> V .
+	op esIgual : V V -> Bool .
+	op esDistinta : V V -> Bool .
+	op esMenor : V V -> Bool .
+
+*************  SEMANTICA  ************
+	var v w : V .
+
+	eq esIgual(v, v) = true .
+	eq esIgual(v, w) = false .
+	eq esDistinta(v, w) = not esIgual(v, w) .
+	eq esMenor(v, v) = false .
+	eq esMenor(A, w) = true .
+	eq esMenor(v, A) = false .
+	eq esMenor(E, w) = true .
+	eq esMenor(v, E) = false .
+	eq esMenor(I, w) = true .
+	eq esMenor(v, I) = false .
+	eq esMenor(O, w) = true .
+	eq esMenor(v, O) = false .
+	eq esMenor(U, w) = false .
+	eq esMenor(v, U) = true .
+endfm
+
+*************  NOMBRE  ***************
+fmod NATURAL is
+
+*************  CONJUNTOS  ************
+	protecting BOOL .
+	sort N .
+	sort NoN .
+	subsort NoN < N .
+
+*************  SINTAXIS  *************
+	op cero : -> N .
+	op sucesor : N -> N .
+	op suma : N N -> N .
+	op esCero : N -> Bool .
+	op esIgual : N N -> Bool .
+	op esDistinto : N N -> Bool .
+
+	op NODEFINIDO : -> NoN .
+	op INFINITO : -> NoN .
+	op NEGATIVO : -> NoN .
+
+*************  SEMANTICA  ************
+	var n m : N .
+
+	eq suma(cero, n) = n .
+	eq suma(sucesor(m), n) = sucesor(suma(m, n)) .
+	eq esCero(cero) = true .
+	eq esCero(sucesor(n)) = false .
+	eq esIgual(cero, n) = esCero(n) .
+	eq esIgual(sucesor(n), cero) = false .
+	eq esIgual(sucesor(n), sucesor(m)) = esIgual(n, m) .
+	eq esDistinto(n, m) = not esIgual(n, m) .
+endfm
+
+*************  NOMBRE  ***************
+fmod CONJUNTO is
+
+*************  CONJUNTOS  ************
+	protecting BOOL .
+	protecting NATURAL .
+	protecting VOCAL .
+	sort C .
+
+*************  SINTAXIS  *************
+	op cjtoVacio : -> C .
+	op esVacio : C -> Bool .
+	op insertar : V C -> C .
+	op esMiembro : V C -> Bool .
+	op tamano : C -> N .
+	op union : C C -> C .
+	op interseccion : C C -> C .
+	op diferencia : C C -> C .
+	op eliminar : V C -> C .
+
+*************  SEMANTICA  ************
+	var v w : V .
+	var c d : C .
+
+	eq esVacio(cjtoVacio) = true .
+	eq esVacio(insertar(v, c)) = false .
+	eq esMiembro(v, cjtoVacio) = false .
+	eq esMiembro(v, insertar(w, c)) = esIgual(v, w) or esMiembro(v, c) .
+	eq tamano(cjtoVacio) = cero .
+	eq tamano(insertar(v, c)) = suma(tamano(c), if esMiembro(v, c) then cero else sucesor(cero) fi ) .
+	eq union(cjtoVacio, cjtoVacio) = cjtoVacio .
+	eq union(c, cjtoVacio) = c .
+	eq union(cjtoVacio, c) = c .
+	eq union(insertar(v, c), d) =  if esVacio(c) then union(insertar(v, d), cjtoVacio) else insertar(v, union(c, d)) fi .
+	eq interseccion(c, cjtoVacio) = cjtoVacio .
+	eq interseccion(cjtoVacio, c) = cjtoVacio .
+	eq interseccion(insertar(v, c), insertar(w, d)) = if esMiembro(v, insertar(w, d)) then insertar(v, interseccion(insertar(v, c), eliminar(v, insertar(w, d)))) else interseccion(c, insertar(w, d)) fi .
+	eq diferencia(c, cjtoVacio) = c .
+	eq diferencia(cjtoVacio, c) = cjtoVacio .
+	eq diferencia(insertar(v, c), insertar(w, d)) = if esMiembro(v, insertar(w, d)) then diferencia(c, insertar(w, d)) else insertar(v, diferencia(eliminar(v, insertar(v, c)), insertar(w, d))) fi .
+	eq eliminar(v, cjtoVacio) = cjtoVacio .
+	eq eliminar(v, insertar(w, c)) = if esIgual(v, w) then eliminar(v, c) else insertar(w, eliminar(v, c)) fi .
+	
+endfm
+

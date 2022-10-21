@@ -1,0 +1,33 @@
+*************  NOMBRE  ***************
+fmod NATURAL is
+
+*************  CONJUNTOS  ************
+	protecting BOOL .
+	sort N .
+	sort NoN .
+	subsort NoN < N .
+
+*************  SINTAXIS  *************
+	op cero : -> N .
+	op sucesor : N -> N .
+	op suma : N N -> N .
+	op esCero : N -> Bool .
+	op esIgual : N N -> Bool .
+	op esDistinto : N N -> Bool .
+
+	op NODEFINIDO : -> NoN .
+	op INFINITO : -> NoN .
+	op NEGATIVO : -> NoN .
+
+*************  SEMANTICA  ************
+	var n m : N .
+
+	eq suma(cero, n) = n .
+	eq suma(sucesor(m), n) = sucesor(suma(m, n)) .
+	eq esCero(cero) = true .
+	eq esCero(sucesor(n)) = false .
+	eq esIgual(cero, n) = esCero(n) .
+	eq esIgual(sucesor(n), cero) = false .
+	eq esIgual(sucesor(n), sucesor(m)) = esIgual(n, m) .
+	eq esDistinto(n, m) = not esIgual(n, m) .
+endfm

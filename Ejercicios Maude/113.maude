@@ -1,0 +1,64 @@
+*************  NOMBRE  ***************
+fmod VOCAL is
+
+*************  CONJUNTOS  ************
+	protecting BOOL .
+	sort V .
+
+*************  SINTAXIS  *************
+	ops A E I O U : -> V .
+	op esIgual : V V -> Bool .
+	op esDistinta : V V -> Bool .
+	op esMenor : V V -> Bool .
+
+*************  SEMANTICA  ************
+	var v w : V .
+
+	eq esIgual(v, v) = true .
+	eq esIgual(v, w) = false .
+	eq esDistinta(v, w) = not esIgual(v, w) .
+	eq esMenor(v, v) = false .
+	eq esMenor(A, w) = true .
+	eq esMenor(v, A) = false .
+	eq esMenor(E, w) = true .
+	eq esMenor(v, E) = false .
+	eq esMenor(I, w) = true .
+	eq esMenor(v, I) = false .
+	eq esMenor(O, w) = true .
+	eq esMenor(v, O) = false .
+	eq esMenor(U, w) = false .
+	eq esMenor(v, U) = true .
+endfm
+
+*************  NOMBRE  ***************
+fmod COLA is
+
+*************  CONJUNTOS  ************
+	protecting BOOL .
+	protecting VOCAL .
+	sort MensajeCola .
+	sort C .
+	subsorts MensajeCola < V .
+
+*************  SINTAXIS  *************
+	op colaVacia : -> C .
+	op esVacia : C -> Bool .
+	op meter : V C -> C .
+	op sacar : C -> C .
+	op cabecera : C -> V .
+
+	op ERRORCOLAVACIA : -> MensajeCola .
+
+*************  SEMANTICA  ************
+	var c : C .
+	var v : V .
+
+	eq esVacia(colaVacia) = true .
+	eq esVacia(meter(v, c)) = false .
+	eq sacar(colaVacia) = colaVacia .
+	eq sacar(meter(v, colaVacia)) = colaVacia .
+	eq sacar(meter(v, c)) = meter(v, sacar(c)) .
+	eq cabecera(colaVacia) = ERRORCOLAVACIA .
+	eq cabecera(meter(v, colaVacia)) = v .
+	eq cabecera(meter(v, c)) = cabecera(c) .
+endfm

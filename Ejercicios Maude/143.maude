@@ -1,0 +1,160 @@
+*************  NOMBRE  ***************
+fmod NATURAL is
+
+*************  CONJUNTOS  ************
+	protecting BOOL .
+	sort N .
+	sort NoN .
+	subsort NoN < N .
+
+*************  SINTAXIS  *************
+	op cero : -> N .
+	op sucesor : N -> N .
+	op suma : N N -> N .
+	op esCero : N -> Bool .
+	op esIgual : N N -> Bool .
+	op resta : N N -> N .
+	op esDistinto : N N -> Bool .
+
+	op NODEFINIDO : -> NoN .
+	op INFINITO : -> NoN .
+	op NEGATIVO : -> NoN .
+
+*************  SEMANTICA  ************
+	var n m : N .
+
+	eq suma(cero, n) = n .
+	eq suma(sucesor(m), n) = sucesor(suma(m, n)) .
+	eq esCero(cero) = true .
+	eq esCero(sucesor(n)) = false .
+	eq esCero(NEGATIVO) = false .
+	eq esIgual(cero, n) = esCero(n) .
+	eq esIgual(NEGATIVO, NEGATIVO) = true .
+	eq esIgual(n, NEGATIVO) = false .
+	eq esIgual(NEGATIVO, n) = false .
+	eq esIgual(sucesor(n), cero) = false .
+	eq esIgual(sucesor(n), sucesor(m)) = esIgual(n, m) .
+	eq resta(n, cero) = n .
+	eq resta(cero, n) = NEGATIVO .
+	eq resta(sucesor(m), sucesor(n)) = resta(m, n) .
+	eq esDistinto(n, m) = not esIgual(n, m) .
+endfm
+
+*************  NOMBRE  ***************
+fmod VOCAL is
+
+*************  CONJUNTOS  ************
+	protecting BOOL .
+	sort V .
+
+*************  SINTAXIS  *************
+	ops A E I O U : -> V .
+	op esIgual : V V -> Bool .
+	op esDistinta : V V -> Bool .
+	op esMenor : V V -> Bool .
+
+*************  SEMANTICA  ************
+	var v w : V .
+
+	eq esIgual(v, v) = true .
+	eq esIgual(v, w) = false .
+	eq esDistinta(v, w) = not esIgual(v, w) .
+	eq esMenor(v, v) = false .
+	eq esMenor(A, w) = true .
+	eq esMenor(v, A) = false .
+	eq esMenor(E, w) = true .
+	eq esMenor(v, E) = false .
+	eq esMenor(I, w) = true .
+	eq esMenor(v, I) = false .
+	eq esMenor(O, w) = true .
+	eq esMenor(v, O) = false .
+	eq esMenor(U, w) = false .
+	eq esMenor(v, U) = true .
+endfm
+
+*************  NOMBRE  ***************
+fmod BOLSA is
+
+*************  CONJUNTOS  ************
+	protecting BOOL .
+	protecting NATURAL .
+	protecting VOCAL .
+	sort B .
+
+*************  SINTAXIS  *************
+	op bolsaVacia : -> B .
+	op esVacia : B -> Bool .
+	op insertar : V B -> B .
+	op contar : V B -> N .
+	op eliminar : V B -> B .
+	op esIgual : B B -> Bool .
+	op esMiembro : V B -> Bool .
+	op union : B B -> B .
+
+*************  SEMANTICA  ************
+	var v w : V .
+	var b d : B .
+
+	eq esVacia(bolsaVacia) = true .
+	eq esVacia(insertar(v, b)) = false .
+	eq contar(v, bolsaVacia) = cero .
+	eq contar(v, insertar(w, b)) = suma(contar(v, b), if esIgual(v, w) then sucesor(cero) else cero fi ) .
+	eq eliminar(v, bolsaVacia) = bolsaVacia .
+	eq eliminar(v, insertar(w, b)) = if esIgual(v, w) then b else insertar(w, eliminar(v, b)) fi .
+	eq esIgual(bolsaVacia, bolsaVacia) = true .
+	eq esIgual(b, bolsaVacia) = false .
+	eq esIgual(bolsaVacia, b) = false .
+	eq esIgual(insertar(v, b), insertar(w, d)) = if esMiembro(v, insertar(w, d)) then esIgual(b, eliminar(v, insertar(w, d))) else false fi .
+	eq esMiembro(v, bolsaVacia) = false .
+	eq esMiembro(v, insertar(w, b)) = esIgual(v, w) or esMiembro(v, b) .
+	eq union(bolsaVacia, bolsaVacia) = bolsaVacia .
+	eq union(b, bolsaVacia) = b .
+	eq union(bolsaVacia, b) = b .
+	eq union(insertar(v, b), d) =  if esVacia(b) then union(insertar(v, d), bolsaVacia) else insertar(v, union(b, d)) fi .
+	
+endfm
+
+*************  NOMBRE  ***************
+fmod ARBOLBINARIOVOCALES is
+
+*************  CONJUNTOS  ************
+	protecting BOOL .
+	protecting NATURAL .
+	protecting VOCAL .
+	protecting BOLSA .
+	sort AB .
+
+*************  SINTAXIS  *************
+	op arbolVacio : -> AB .
+	op esVacio : AB -> Bool .
+	op construir : V AB AB -> AB .
+	op construirRaiz : V -> AB .
+	op altura : AB -> N .
+	op numNodos : AB -> N .
+	op sacaTodos : AB -> B .
+	op sacaHojas : AB -> B .
+	op sacaNivel : N AB -> B .
+
+*************  SEMANTICA  ************
+	var v : V .
+	var n : N .
+	var a a1 a2 : AB .
+
+	eq esVacio(arbolVacio) = true .
+	eq esVacio(construir(v, a1, a2)) = false .
+	eq esVacio(construirRaiz(v)) = false .
+	eq construirRaiz(v) = construir(v, arbolVacio, arbolVacio) . 
+	eq altura(arbolVacio) = cero .
+	eq altura(construir(v, a1, a2)) = if esIgual(resta(altura(a1), altura(a2)), NEGATIVO) then suma(altura(a2), sucesor(cero)) else suma(altura(a1), sucesor(cero)) fi .
+	eq numNodos(arbolVacio) = cero .
+	eq numNodos(construir(v, a1, a2)) = suma(suma(numNodos(a1), numNodos(a2)), sucesor(cero)) .
+	eq sacaTodos(arbolVacio) = bolsaVacia .
+	eq sacaTodos(construir(v, a1, a2)) = insertar(v, union(sacaTodos(a1), sacaTodos(a2))) .
+	eq sacaHojas(arbolVacio) = bolsaVacia .
+	eq sacaHojas(construir(v, arbolVacio, arbolVacio)) = insertar(v, bolsaVacia) .
+	eq sacaHojas(construir(v, a1, a2)) = union(sacaHojas(a1), sacaHojas(a2)) .
+	eq sacaNivel(n, arbolVacio) = bolsaVacia .
+	eq sacaNivel(cero, construir(v, a1, a2)) = insertar(v, bolsaVacia) .
+	eq sacaNivel(sucesor(cero), construir(v, a1, a2)) = union(sacaNivel(cero, a1), sacaNivel(cero, a2)) .
+	eq sacaNivel(sucesor(n), construir(v, a1, a2)) = union(sacaNivel(n, a1), sacaNivel(n, a2)) .
+endfm

@@ -1,0 +1,113 @@
+*************  NOMBRE  ***************
+fmod VOCAL is
+
+*************  CONJUNTOS  ************
+	protecting BOOL .
+	sort V .
+
+*************  SINTAXIS  *************
+	ops A E I O U : -> V .
+	op esIgual : V V -> Bool .
+	op esDistinta : V V -> Bool .
+	op esMenor : V V -> Bool .
+
+*************  SEMANTICA  ************
+	var v w : V .
+
+	eq esIgual(v, v) = true .
+	eq esIgual(v, w) = false .
+	eq esDistinta(v, w) = not esIgual(v, w) .
+	eq esMenor(v, v) = false .
+	eq esMenor(A, w) = true .
+	eq esMenor(v, A) = false .
+	eq esMenor(E, w) = true .
+	eq esMenor(v, E) = false .
+	eq esMenor(I, w) = true .
+	eq esMenor(v, I) = false .
+	eq esMenor(O, w) = true .
+	eq esMenor(v, O) = false .
+	eq esMenor(U, w) = false .
+	eq esMenor(v, U) = true .
+endfm
+
+*************  NOMBRE  ***************
+fmod NATURAL is
+
+*************  CONJUNTOS  ************
+	protecting BOOL .
+	sort N .
+	sort NoN .
+	subsort NoN < N .
+
+*************  SINTAXIS  *************
+	op cero : -> N .
+	op sucesor : N -> N .
+	op suma : N N -> N .
+	op esCero : N -> Bool .
+	op esIgual : N N -> Bool .
+	op esDistinto : N N -> Bool .
+
+	op NODEFINIDO : -> NoN .
+	op INFINITO : -> NoN .
+	op NEGATIVO : -> NoN .
+
+*************  SEMANTICA  ************
+	var n m : N .
+
+	eq suma(cero, n) = n .
+	eq suma(sucesor(m), n) = sucesor(suma(m, n)) .
+	eq esCero(cero) = true .
+	eq esCero(sucesor(n)) = false .
+	eq esIgual(cero, n) = esCero(n) .
+	eq esIgual(sucesor(n), cero) = false .
+	eq esIgual(sucesor(n), sucesor(m)) = esIgual(n, m) .
+	eq esDistinto(n, m) = not esIgual(n, m) .
+endfm
+
+*************  NOMBRE  ***************
+fmod PILA is
+
+*************  CONJUNTOS  ************
+	protecting BOOL .
+	protecting VOCAL .
+	protecting NATURAL .
+	sort MensajePilas .
+	sort P .
+	subsorts MensajePilas < V .
+
+*************  SINTAXIS  *************
+	op pilaVacia : -> P .
+	op esVacia : P -> Bool .
+	op push : V P -> P .
+	op pop : P -> P .
+	op tope : P -> V .
+	op esIgual : P P -> Bool .
+	op primero : P -> V .
+	op tamano : P -> N .
+	op cuentaVocal : V P -> N .
+
+	op ERRORPILAVACIA : -> MensajePilas .
+
+*************  SEMANTICA  ************
+	var p q : P .
+	var v : V .
+
+	eq esVacia(pilaVacia) = true .
+	eq esVacia(push(v, p)) = false .
+	eq pop(pilaVacia) = pilaVacia .
+	eq pop(push(v, p)) = p .
+	eq tope(pilaVacia) = ERRORPILAVACIA .
+	eq tope(push(v, p)) = v .
+	eq esIgual(pilaVacia, pilaVacia) = true .
+	eq esIgual(pilaVacia, p) = false .
+	eq esIgual(p, pilaVacia) = false .
+	eq esIgual(p, q) = if esIgual(tope(p), tope(q)) then esIgual(pop(p), pop(q)) else false fi .
+	eq primero(pilaVacia) = ERRORPILAVACIA .
+	eq primero(push(v, pilaVacia)) = v .
+	eq primero(p) = primero(pop(p)) .
+	eq tamano(pilaVacia) = cero .
+	eq tamano(p) = sucesor(tamano(pop(p))) .
+	eq cuentaVocal(v, pilaVacia) = cero .
+	eq cuentaVocal(v, p) = if esIgual(v, tope(p)) then suma(cuentaVocal(v, pop(p)), sucesor(cero)) else cuentaVocal(v, pop(p)) fi .
+endfm
+

@@ -1,0 +1,70 @@
+*************  NOMBRE  ***************
+fmod NATURAL is
+
+*************  CONJUNTOS  ************
+   protecting BOOL .
+   sort N .
+   sort NoN .
+   sort NEGATIVO .
+   subsort NoN < N .
+   subsort NEGATIVO < NoN .
+
+*************  SINTAXIS  *************
+   	op cero : -> N .
+   	op sucesor : N -> N .
+   	op suma : N N -> N .
+  	op esCero : N -> Bool .
+   	op esIgual : N N -> Bool .
+   	op esDistinto : N N -> Bool .
+	op producto : N N -> N .
+	op potencia : N N -> N .
+	op cuadrado : N -> N .
+	op factorial : N -> N .
+	op predecesor : N -> N .
+	op resta : N N -> N .
+	op diferencia : N N -> N .
+	op difUno : N N -> Bool .
+
+   	op NODEFINIDO : -> NoN .
+  	op INFINITO : -> NoN .
+   	op NEGATIVO : -> NoN .
+
+*************  SEMANTICA  ************
+   var n m : N .
+
+   	eq suma(cero, n) = n .
+   	eq suma(sucesor(m), n) = sucesor(suma(m, n)) .
+   	eq esCero(cero) = true .
+	eq esCero(NEGATIVO) = false .
+   	eq esCero(sucesor(n)) = false .
+   	eq esIgual(cero, n) = esCero(n) .
+   	eq esIgual(sucesor(n), cero) = false .
+   	eq esIgual(sucesor(n), sucesor(m)) = esIgual(n, m) .
+   	eq esDistinto(n, m) = not esIgual(n, m) .
+	eq producto(n, cero) = cero .
+	eq producto(cero, n) = cero .
+	eq producto(n, sucesor(cero)) = n .
+	eq producto(sucesor(cero), n) = n .
+	eq producto(n, sucesor(sucesor(m))) = suma(suma(n, n), producto(n, m)) .
+	eq potencia(cero, cero) = NODEFINIDO .
+	eq potencia(n, cero) = sucesor(cero) .
+	eq potencia(cero, n) = cero .
+	eq potencia(n, sucesor(cero)) = n .
+	eq potencia(sucesor(cero), n) = sucesor(cero) .
+	eq potencia(n, sucesor(m)) = producto(n, potencia(n, m)) .
+	eq cuadrado(n) = potencia(n, sucesor(sucesor(cero))) .
+	eq factorial(cero) = sucesor(cero) .
+	eq factorial(sucesor(cero)) = sucesor(cero) .
+	eq factorial(sucesor(n)) = producto(sucesor(n), factorial(n)) .
+	eq predecesor(cero) = NEGATIVO .
+	eq predecesor(sucesor(n)) = n .
+	eq resta(n, cero) = n .
+	eq resta(cero, n) = NEGATIVO .
+	eq resta(sucesor(m), sucesor(n)) = resta(m, n) .
+	eq diferencia(n, cero) = n .
+	eq diferencia(cero, n) = n .
+	eq diferencia(sucesor(m), sucesor(n)) = diferencia(m, n) .
+	eq difUno(n, n) = true .
+	eq difUno(m, n) = esCero(resta(diferencia(m, n), sucesor(cero))) .
+endfm
+

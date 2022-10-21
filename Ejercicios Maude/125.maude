@@ -1,0 +1,93 @@
+*************  NOMBRE  ***************
+fmod NATURAL is
+
+*************  CONJUNTOS  ************
+	protecting BOOL .
+	sort N .
+	sort NoN .
+	subsort NoN < N .
+
+*************  SINTAXIS  *************
+	op cero : -> N .
+	op sucesor : N -> N .
+	op suma : N N -> N .
+	op esCero : N -> Bool .
+	op esIgual : N N -> Bool .
+	op esDistinto : N N -> Bool .
+
+	op NODEFINIDO : -> NoN .
+	op INFINITO : -> NoN .
+	op NEGATIVO : -> NoN .
+
+*************  SEMANTICA  ************
+	var n m : N .
+
+	eq suma(cero, n) = n .
+	eq suma(sucesor(m), n) = sucesor(suma(m, n)) .
+	eq esCero(cero) = true .
+	eq esCero(sucesor(n)) = false .
+	eq esIgual(cero, n) = esCero(n) .
+	eq esIgual(sucesor(n), cero) = false .
+	eq esIgual(sucesor(n), sucesor(m)) = esIgual(n, m) .
+	eq esDistinto(n, m) = not esIgual(n, m) .
+endfm
+
+*************  NOMBRE  ***************
+fmod VOCAL is
+
+*************  CONJUNTOS  ************
+	protecting BOOL .
+	sort V .
+
+*************  SINTAXIS  *************
+	ops A E I O U : -> V .
+	op esIgual : V V -> Bool .
+	op esDistinta : V V -> Bool .
+	op esMenor : V V -> Bool .
+
+*************  SEMANTICA  ************
+	var v w : V .
+
+	eq esIgual(v, v) = true .
+	eq esIgual(v, w) = false .
+	eq esDistinta(v, w) = not esIgual(v, w) .
+	eq esMenor(v, v) = false .
+	eq esMenor(A, w) = true .
+	eq esMenor(v, A) = false .
+	eq esMenor(E, w) = true .
+	eq esMenor(v, E) = false .
+	eq esMenor(I, w) = true .
+	eq esMenor(v, I) = false .
+	eq esMenor(O, w) = true .
+	eq esMenor(v, O) = false .
+	eq esMenor(U, w) = false .
+	eq esMenor(v, U) = true .
+endfm
+
+*************  NOMBRE  ***************
+fmod BOLSA is
+
+*************  CONJUNTOS  ************
+	protecting BOOL .
+	protecting NATURAL .
+	protecting VOCAL .
+	sort B .
+
+*************  SINTAXIS  *************
+	op bolsaVacia : -> B .
+	op esVacia : B -> Bool .
+	op insertar : V B -> B .
+	op contar : V B -> N .
+	op eliminar : V B -> B .
+
+*************  SEMANTICA  ************
+	var v w : V .
+	var b : B .
+
+	eq esVacia(bolsaVacia) = true .
+	eq esVacia(insertar(v, b)) = false .
+	eq contar(v, bolsaVacia) = cero .
+	eq contar(v, insertar(w, b)) = if esIgual(v, w) then suma(contar(v, b), sucesor(cero)) else contar(v, b) fi .
+	eq eliminar(v, bolsaVacia) = bolsaVacia .
+	eq eliminar(v, insertar(w, b)) = if esIgual(v, w) then b else insertar(w, eliminar(v, b)) fi .
+endfm

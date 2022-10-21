@@ -1,0 +1,156 @@
+*************  NOMBRE  ***************
+fmod NATURAL is
+
+*************  CONJUNTOS  ************
+	protecting BOOL .
+	sort N .
+	sort NoN .
+	subsort NoN < N .
+
+*************  SINTAXIS  *************
+	op cero : -> N .
+	op sucesor : N -> N .
+	op suma : N N -> N .
+	op esCero : N -> Bool .
+	op esIgual : N N -> Bool .
+	op resta : N N -> N .
+	op esDistinto : N N -> Bool .
+
+	op NODEFINIDO : -> NoN .
+	op INFINITO : -> NoN .
+	op NEGATIVO : -> NoN .
+
+*************  SEMANTICA  ************
+	var n m : N .
+
+	eq suma(cero, n) = n .
+	eq suma(sucesor(m), n) = sucesor(suma(m, n)) .
+	eq esCero(cero) = true .
+	eq esCero(sucesor(n)) = false .
+	eq esCero(NEGATIVO) = false .
+	eq esIgual(cero, n) = esCero(n) .
+	eq esIgual(NEGATIVO, NEGATIVO) = true .
+	eq esIgual(n, NEGATIVO) = false .
+	eq esIgual(NEGATIVO, n) = false .
+	eq esIgual(sucesor(n), cero) = false .
+	eq esIgual(sucesor(n), sucesor(m)) = esIgual(n, m) .
+	eq resta(n, cero) = n .
+	eq resta(cero, n) = NEGATIVO .
+	eq resta(sucesor(m), sucesor(n)) = resta(m, n) .
+	eq esDistinto(n, m) = not esIgual(n, m) .
+endfm
+
+*************  NOMBRE  ***************
+fmod VOCAL is
+
+*************  CONJUNTOS  ************
+	protecting BOOL .
+	sort V .
+
+*************  SINTAXIS  *************
+	ops A E I O U : -> V .
+	op esIgual : V V -> Bool .
+	op esDistinta : V V -> Bool .
+	op esMenor : V V -> Bool .
+
+*************  SEMANTICA  ************
+	var v w : V .
+
+	eq esIgual(v, v) = true .
+	eq esIgual(v, w) = false .
+	eq esDistinta(v, w) = not esIgual(v, w) .
+	eq esMenor(v, v) = false .
+	eq esMenor(A, w) = true .
+	eq esMenor(v, A) = false .
+	eq esMenor(E, w) = true .
+	eq esMenor(v, E) = false .
+	eq esMenor(I, w) = true .
+	eq esMenor(v, I) = false .
+	eq esMenor(O, w) = true .
+	eq esMenor(v, O) = false .
+	eq esMenor(U, w) = false .
+	eq esMenor(v, U) = true .
+endfm
+
+*************  NOMBRE  ***************
+fmod LISTA is
+
+*************  CONJUNTOS  ************
+	protecting BOOL .
+	protecting NATURAL .
+	protecting VOCAL .
+	sort L .
+	sort MensajeListas .
+	subsorts MensajeListas < V .
+
+*************  SINTAXIS  *************
+	op listaVacia : -> L .
+	op esVacia : L -> Bool .
+	op insertar : V L -> L .
+	op insertarFinal : V L -> L .
+	op tamano : L -> N .
+	op primero : L -> V .
+	op cola : L -> L .
+	op concatenar : L L -> L .
+
+	op ErrorListaVacia : -> MensajeListas .
+
+*************  SEMANTICA  ************
+	var l k : L .
+	var v w : V .
+
+	eq esVacia(listaVacia) = true .
+	eq esVacia(insertar(v, l)) = false .
+	eq insertarFinal(v, listaVacia) = insertar(v, listaVacia) .
+	eq insertarFinal(v, insertar(w, l)) = insertar(w, insertarFinal(v, l)) .
+	eq tamano(listaVacia) = cero .
+	eq tamano(insertar(v, l)) = sucesor(tamano(l)) .
+	eq primero(listaVacia) = ErrorListaVacia .
+	eq primero(insertar(v, l)) = v .
+	eq cola(listaVacia) = listaVacia .
+	eq cola(insertar(v, l)) = l .
+	eq concatenar(listaVacia, l) = l .
+	eq concatenar(l, listaVacia) = l .
+	eq concatenar(l, k) = concatenar(insertarFinal(primero(k), l), cola(k)) .
+endfm
+
+*************  NOMBRE  ***************
+fmod ARBOLBINARIOVOCALES is
+
+*************  CONJUNTOS  ************
+	protecting BOOL .
+	protecting NATURAL .
+	protecting VOCAL .
+	protecting LISTA .
+	sort AB .
+
+*************  SINTAXIS  *************
+	op arbolVacio : -> AB .
+	op esVacio : AB -> Bool .
+	op construir : V AB AB -> AB .
+	op construirRaiz : V -> AB .
+	op altura : AB -> N .
+	op numNodos : AB -> N .
+	op preOrden : AB -> L .
+	op inOrden : AB -> L .
+	op postOrden : AB -> L .
+
+*************  SEMANTICA  ************
+	var v : V .
+	var a a1 a2 : AB .
+
+	eq esVacio(arbolVacio) = true .
+	eq esVacio(construir(v, a1, a2)) = false .
+	eq esVacio(construirRaiz(v)) = false .
+	eq construirRaiz(v) = construir(v, arbolVacio, arbolVacio) . 
+	eq altura(arbolVacio) = cero .
+	eq altura(construir(v, a1, a2)) = if esIgual(resta(altura(a1), altura(a2)), NEGATIVO) then suma(altura(a2), sucesor(cero)) else suma(altura(a1), sucesor(cero)) fi .
+	eq numNodos(arbolVacio) = cero .
+	eq numNodos(construir(v, a1, a2)) = suma(suma(numNodos(a1), numNodos(a2)), sucesor(cero)) .
+	eq preOrden(arbolVacio) = listaVacia .
+	eq preOrden(construir(v, a1, a2)) = insertar(v, concatenar(preOrden(a1), preOrden(a2))) .
+	eq inOrden(arbolVacio) = listaVacia .
+	eq inOrden(construir(v, a1, a2)) = concatenar(inOrden(a1), insertar(v, inOrden(a2))) .
+	eq postOrden(arbolVacio) = listaVacia .
+	eq postOrden(construir(v, a1, a2)) = insertarFinal(v, concatenar(postOrden(a1), postOrden(a2))) .
+endfm

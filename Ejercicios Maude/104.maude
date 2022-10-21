@@ -1,0 +1,98 @@
+*************  NOMBRE  ***************
+fmod NATURAL is
+
+*************  CONJUNTOS  ************
+   protecting BOOL .
+   sort N .
+   sort NoN .
+   subsort NoN < N .
+
+*************  SINTAXIS  *************
+   	op cero : -> N .
+   	op sucesor : N -> N .
+   	op suma : N N -> N .
+  	op esCero : N -> Bool .
+   	op esIgual : N N -> Bool .
+   	op esDistinto : N N -> Bool .
+	op producto : N N -> N .
+	op potencia : N N -> N .
+	op cuadrado : N -> N .
+	op factorial : N -> N .
+	op esMenor : N N -> Bool .
+	op esMenorIgual : N N -> Bool .
+	op esMayor : N N -> Bool .
+	op esMayorIgual : N N -> Bool .
+	op maximo : N N -> N .
+	op minimo : N N -> N .
+
+   	op NODEFINIDO : -> NoN .
+  	op INFINITO : -> NoN .
+   	op NEGATIVO : -> NoN .
+
+*************  SEMANTICA  ************
+   var n m : N .
+
+   	eq suma(cero, n) = n .
+   	eq suma(sucesor(m), n) = sucesor(suma(m, n)) .
+   	eq esCero(cero) = true .
+   	eq esCero(sucesor(n)) = false .
+   	eq esIgual(cero, n) = esCero(n) .
+   	eq esIgual(sucesor(n), cero) = false .
+   	eq esIgual(sucesor(n), sucesor(m)) = esIgual(n, m) .
+   	eq esDistinto(n, m) = not esIgual(n, m) .
+	eq producto(n, cero) = cero .
+	eq producto(cero, n) = cero .
+	eq producto(n, sucesor(cero)) = n .
+	eq producto(sucesor(cero), n) = n .
+	eq producto(n, sucesor(sucesor(m))) = suma(suma(n, n), producto(n, m)) .
+	eq potencia(cero, cero) = NODEFINIDO .
+	eq potencia(n, cero) = sucesor(cero) .
+	eq potencia(cero, n) = cero .
+	eq potencia(n, sucesor(cero)) = n .
+	eq potencia(sucesor(cero), n) = sucesor(cero) .
+	eq potencia(n, sucesor(m)) = producto(n, potencia(n, m)) .
+	eq cuadrado(n) = potencia(n, sucesor(sucesor(cero))) .
+	eq factorial(cero) = sucesor(cero) .
+	eq factorial(sucesor(cero)) = sucesor(cero) .
+	eq factorial(sucesor(n)) = producto(sucesor(n), factorial(n)) .
+	*** MENOR
+	eq esMenor(cero, cero) = false .
+	eq esMenor(sucesor(cero), cero) = false .
+	eq esMenor(cero, sucesor(cero)) = true .
+	eq esMenor(cero, sucesor(n)) = esMenor(cero, n) .
+	eq esMenor(sucesor(n), cero) = false .
+	eq esMenor(sucesor(n), sucesor(m)) = esMenor(n,m) .
+	*** MENOR IGUAL 
+	eq esMenorIgual(cero, cero) = true .
+	eq esMenorIgual(sucesor(cero), cero) = false .
+	eq esMenorIgual(cero, sucesor(cero)) = true .
+	eq esMenorIgual(cero, sucesor(n)) = true .
+	eq esMenorIgual(sucesor(n), cero) = false .
+	eq esMenorIgual(sucesor(n), sucesor(n)) = true .
+	eq esMenorIgual(sucesor(n), sucesor(m)) = esMenorIgual(n,m) .
+	*** MAYOR
+	eq esMayor(cero, cero) = false .
+	eq esMayor(sucesor(cero), cero) = true .
+	eq esMayor(cero, sucesor(cero)) = false .
+	eq esMayor(cero, sucesor(n)) = false .
+	eq esMayor(sucesor(n), cero) = true .
+	eq esMayor(sucesor(n), sucesor(m)) = esMayor(n,m) . 
+	*** MAYOR IGUAL
+	eq esMayorIgual(cero, cero) = true .
+	eq esMayorIgual(sucesor(cero), cero) = true .
+	eq esMayorIgual(cero, sucesor(cero)) = false .
+	eq esMayorIgual(cero, sucesor(n)) = false .
+	eq esMayorIgual(sucesor(n), cero) = true .
+	eq esMayorIgual(sucesor(n), sucesor(n)) = true .
+	eq esMayorIgual(sucesor(n), sucesor(m)) = esMayorIgual(n,m) .
+	*** maximo
+	eq maximo(n, cero) = n .
+	eq maximo(cero, n) = n .
+	eq maximo(sucesor(n), sucesor(m)) = if esMayor(sucesor(n), sucesor(m)) then sucesor(n) else sucesor(m) fi .
+	*** minimo
+	eq minimo(n, cero) = cero .
+	eq minimo(cero, n) = cero .
+	eq minimo(sucesor(n), sucesor(m)) = if esMenor(sucesor(n), sucesor(m)) then sucesor(n) else sucesor(m) fi .
+
+endfm
+

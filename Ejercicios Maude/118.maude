@@ -1,0 +1,129 @@
+*************  NOMBRE  ***************
+fmod NATURAL is
+
+*************  CONJUNTOS  ************
+	protecting BOOL .
+	sort N .
+	sort NoN .
+	subsort NoN < N .
+
+*************  SINTAXIS  *************
+	op cero : -> N .
+	op sucesor : N -> N .
+	op suma : N N -> N .
+	op esCero : N -> Bool .
+	op esIgual : N N -> Bool .
+	op esDistinto : N N -> Bool .
+	op esMayor : N N -> Bool .
+
+	op NODEFINIDO : -> NoN .
+	op INFINITO : -> NoN .
+	op NEGATIVO : -> NoN .
+
+*************  SEMANTICA  ************
+	var n m : N .
+
+	eq suma(cero, n) = n .
+	eq suma(sucesor(m), n) = sucesor(suma(m, n)) .
+	eq esCero(cero) = true .
+	eq esCero(sucesor(n)) = false .
+	eq esIgual(cero, n) = esCero(n) .
+	eq esIgual(sucesor(n), cero) = false .
+	eq esIgual(sucesor(n), sucesor(m)) = esIgual(n, m) .
+	eq esDistinto(n, m) = not esIgual(n, m) .
+	eq esMayor(cero, cero) = false .
+	eq esMayor(sucesor(cero), cero) = true .
+	eq esMayor(cero, sucesor(cero)) = false .
+	eq esMayor(cero, sucesor(n)) = false .
+	eq esMayor(sucesor(n), cero) = true .
+	eq esMayor(sucesor(n), sucesor(m)) = esMayor(n,m) .
+endfm
+
+*************  NOMBRE  ***************
+fmod VOCAL is
+
+*************  CONJUNTOS  ************
+	protecting BOOL .
+	sort V .
+
+*************  SINTAXIS  *************
+	ops A E I O U : -> V .
+	op esIgual : V V -> Bool .
+	op esDistinta : V V -> Bool .
+	op esMenor : V V -> Bool .
+
+*************  SEMANTICA  ************
+	var v w : V .
+
+	eq esIgual(v, v) = true .
+	eq esIgual(v, w) = false .
+	eq esDistinta(v, w) = not esIgual(v, w) .
+	eq esMenor(v, v) = false .
+	eq esMenor(A, w) = true .
+	eq esMenor(v, A) = false .
+	eq esMenor(E, w) = true .
+	eq esMenor(v, E) = false .
+	eq esMenor(I, w) = true .
+	eq esMenor(v, I) = false .
+	eq esMenor(O, w) = true .
+	eq esMenor(v, O) = false .
+	eq esMenor(U, w) = false .
+	eq esMenor(v, U) = true .
+endfm
+
+*************  NOMBRE  ***************
+fmod LISTA is
+
+*************  CONJUNTOS  ************
+	protecting BOOL .
+	protecting NATURAL .
+	protecting VOCAL .
+	sort L .
+	sort MensajeListas .
+	subsorts MensajeListas < V .
+
+*************  SINTAXIS  *************
+	op listaVacia : -> L .
+	op esVacia : L -> Bool .
+	op insertar : V L -> L .
+	op insertarFinal : V L -> L .
+	op tamano : L -> N .
+	op primero : L -> V .
+	op cola : L -> L .
+	op esIgual : L L -> Bool .
+	op esMenor : L L -> Bool .
+	op buscar : V L -> N .
+	op posicion : N L -> V .
+
+	op ErrorListaVacia : -> MensajeListas .
+	op ERRORFUERADELISTA : -> MensajeListas .	
+	
+*************  SEMANTICA  ************
+	var l k : L .
+	var n : N .
+	var v w : V .
+
+	eq esVacia(listaVacia) = true .
+	eq esVacia(insertar(v, l)) = false .
+	eq insertarFinal(v, listaVacia) = insertar(v, listaVacia) .
+	eq insertarFinal(v, insertar(w, l)) = insertar(w, insertarFinal(v, l)) .
+	eq tamano(listaVacia) = cero .
+	eq tamano(insertar(v, l)) = sucesor(tamano(l)) .
+	eq primero(listaVacia) = ErrorListaVacia .
+	eq primero(insertar(v, l)) = v .
+	eq cola(listaVacia) = listaVacia .
+	eq cola(insertar(v, l)) = l .
+	eq esIgual(listaVacia, listaVacia) = true .
+	eq esIgual(l, listaVacia) = false .
+	eq esIgual(listaVacia, l) = false .
+	eq esIgual(l, k) = if esIgual(primero(l), primero(k)) then esIgual(cola(l), cola(k)) else false fi .
+	eq esMenor(listaVacia, listaVacia) = false .
+	eq esMenor(l, listaVacia) = false .
+	eq esMenor(listaVacia, l) = true .
+	eq esMenor(l, k) = if esIgual(primero(l), primero(k)) then esMenor(cola(l), cola(k)) else esMenor(primero(l), primero(k)) fi .
+	eq buscar(v, listaVacia) = suma(tamano(listaVacia), sucesor(cero)) .
+	eq buscar(v, l) = if esIgual(v, primero(l)) then cero else suma(buscar(v, cola(l)), sucesor(cero)) fi .
+	eq posicion(cero, listaVacia) = ERRORFUERADELISTA .
+	eq posicion(cero, l) = primero(l) .
+	eq posicion(sucesor(n), l) = if esMayor(sucesor(n), tamano(l)) then ERRORFUERADELISTA else posicion(n, cola(l)) fi .
+endfm
